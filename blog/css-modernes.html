@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Modernes : Les nouvelles fonctionnalités à connaître</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="nav-logo">Mon Blog</a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link ">Accueil</a></li>
+                    <li><a href="blog.html" class="nav-link ">Blog</a></li>
+                    <li><a href="about.html" class="nav-link ">À propos</a></li>
+                    <li><a href="faq.html" class="nav-link ">FAQ</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <h1>CSS Modernes : Les nouvelles fonctionnalités à connaître</h1>
+<p>Le CSS a considérablement évolué ces dernières années. De nouvelles fonctionnalités puissantes ont été ajoutées, rendant le développement web plus flexible et créatif que jamais.</p>
+<h2>CSS Grid Layout</h2>
+<p>CSS Grid est probablement l&#39;une des fonctionnalités les plus révolutionnaires des dernières années.</p>
+<h3>Exemple de base</h3>
+<pre><code class="language-css">.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+}
+</code></pre>
+<h3>Layouts complexes</h3>
+<pre><code class="language-css">.layout {
+    display: grid;
+    grid-template-areas: 
+        &quot;header header header&quot;
+        &quot;sidebar main aside&quot;
+        &quot;footer footer footer&quot;;
+    grid-template-columns: 200px 1fr 200px;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+}
+</code></pre>
+<h2>Flexbox avancé</h2>
+<p>Flexbox continue d&#39;être essentiel pour les layouts modernes.</p>
+<h3>Centrage parfait</h3>
+<pre><code class="language-css">.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+</code></pre>
+<h3>Distribution intelligente</h3>
+<pre><code class="language-css">.flex-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.flex-item {
+    flex: 1 1 300px; /* grow, shrink, basis */
+}
+</code></pre>
+<h2>Variables CSS (Custom Properties)</h2>
+<p>Les variables CSS permettent une gestion centralisée des styles.</p>
+<h3>Définition et utilisation</h3>
+<pre><code class="language-css">:root {
+    --primary-color: #3b82f6;
+    --secondary-color: #1f2937;
+    --spacing-unit: 1rem;
+    --border-radius: 8px;
+}
+
+.button {
+    background-color: var(--primary-color);
+    padding: var(--spacing-unit);
+    border-radius: var(--border-radius);
+}
+</code></pre>
+<h3>Variables dynamiques</h3>
+<pre><code class="language-css">.card {
+    --card-padding: 1rem;
+    padding: var(--card-padding);
+}
+
+.card.large {
+    --card-padding: 2rem;
+}
+</code></pre>
+<h2>Sélecteurs modernes</h2>
+<h3>:is() et :where()</h3>
+<pre><code class="language-css">/* Ancienne façon */
+header h1, header h2, header h3,
+main h1, main h2, main h3 {
+    color: var(--primary-color);
+}
+
+/* Nouvelle façon avec :is() */
+:is(header, main) :is(h1, h2, h3) {
+    color: var(--primary-color);
+}
+</code></pre>
+<h3>:has() (support limité mais prometteur)</h3>
+<pre><code class="language-css">/* Style un élément qui contient un enfant spécifique */
+.card:has(.button) {
+    border: 2px solid var(--primary-color);
+}
+</code></pre>
+<h2>Animations et transitions</h2>
+<h3>Transitions fluides</h3>
+<pre><code class="language-css">.button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+</code></pre>
+<h3>Animations CSS</h3>
+<pre><code class="language-css">@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeIn 0.6s ease-out;
+}
+</code></pre>
+<h2>Responsive Design moderne</h2>
+<h3>Container Queries</h3>
+<pre><code class="language-css">.card-container {
+    container-type: inline-size;
+}
+
+@container (min-width: 400px) {
+    .card {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+    }
+}
+</code></pre>
+<h3>Media Queries avancées</h3>
+<pre><code class="language-css">/* Support du mode sombre */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1f2937;
+        --text-color: #f9fafb;
+    }
+}
+
+/* Support de la réduction de mouvement */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+</code></pre>
+<h2>Bonnes pratiques</h2>
+<ol>
+<li><strong>Utilisez les variables CSS</strong> pour une maintenance facile</li>
+<li><strong>Privilégiez Grid et Flexbox</strong> aux anciennes méthodes</li>
+<li><strong>Testez sur différents navigateurs</strong> avant la production</li>
+<li><strong>Optimisez les performances</strong> en évitant les animations coûteuses</li>
+<li><strong>Pensez accessibilité</strong> avec les media queries appropriées</li>
+</ol>
+<h2>Outils recommandés</h2>
+<ul>
+<li><strong>Can I Use</strong> : Vérifiez la compatibilité navigateur</li>
+<li><strong>CSS Grid Generator</strong> : Créez des layouts Grid visuellement</li>
+<li><strong>Flexbox Froggy</strong> : Apprenez Flexbox de manière interactive</li>
+<li><strong>CSS Validator</strong> : Validez votre CSS</li>
+</ul>
+<h2>Conclusion</h2>
+<p>Les CSS modernes offrent des possibilités extraordinaires pour créer des interfaces web sophistiquées et performantes. En maîtrisant ces nouvelles fonctionnalités, vous pourrez créer des expériences utilisateur exceptionnelles tout en maintenant un code propre et maintenable.</p>
+<hr>
+<p><em>Dans le prochain article, nous explorerons les nouvelles fonctionnalités JavaScript ES2023. Restez connectés !</em> </p>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Mon Blog. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+</html>

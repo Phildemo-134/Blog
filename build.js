@@ -67,7 +67,7 @@ function convertMarkdownToHtml(markdownFile, outputFile, title, currentPage = ''
         // Générer le HTML complet
         const fullHtml = htmlTemplate(pageTitle, htmlContent, currentPage);
         
-        // Écrire le fichier HTML
+        // Écrire le fichier HTML dans le répertoire dist
         fs.writeFileSync(outputFile, fullHtml);
         console.log(`✅ ${markdownFile} → ${outputFile}`);
     } catch (error) {
@@ -105,10 +105,23 @@ function createBlogPage() {
         blogListHtml += '</div>';
         
         const fullHtml = htmlTemplate('Blog', blogListHtml, 'blog');
-        fs.writeFileSync('blog.html', fullHtml);
+        fs.writeFileSync('dist/blog.html', fullHtml);
         console.log('✅ Page blog créée');
     } catch (error) {
         console.error('❌ Erreur lors de la création de la page blog:', error.message);
+    }
+}
+
+// Fonction pour copier les assets
+function copyAssets() {
+    try {
+        // Copier le fichier CSS
+        if (fs.existsSync('assets/style.css')) {
+            fs.copyFileSync('assets/style.css', 'dist/assets/style.css');
+            console.log('✅ assets/style.css copié vers dist/assets/style.css');
+        }
+    } catch (error) {
+        console.error('❌ Erreur lors de la copie des assets:', error.message);
     }
 }
 
@@ -117,7 +130,7 @@ function build() {
     console.log('🚀 Début du build...');
     
     // Créer les dossiers nécessaires
-    const dirs = ['dist', 'dist/blog', 'dist/assets', 'content', 'content/blog', 'blog'];
+    const dirs = ['dist', 'dist/blog', 'dist/assets', 'content', 'content/blog'];
     dirs.forEach(dir => {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -126,9 +139,9 @@ function build() {
     
     // Convertir les pages principales
     const pages = [
-        { input: 'content/index.md', output: 'index.html', title: 'Accueil', currentPage: 'home' },
-        { input: 'content/about.md', output: 'about.html', title: 'À propos', currentPage: 'about' },
-        { input: 'content/faq.md', output: 'faq.html', title: 'FAQ', currentPage: 'faq' }
+        { input: 'content/index.md', output: 'dist/index.html', title: 'Accueil', currentPage: 'home' },
+        { input: 'content/about.md', output: 'dist/about.html', title: 'À propos', currentPage: 'about' },
+        { input: 'content/faq.md', output: 'dist/faq.html', title: 'FAQ', currentPage: 'faq' }
     ];
     
     pages.forEach(page => {
@@ -148,11 +161,14 @@ function build() {
         blogFiles.forEach(file => {
             const slug = file.replace('.md', '');
             const inputPath = path.join(blogDir, file);
-            const outputPath = `blog/${slug}.html`;
+            const outputPath = `dist/blog/${slug}.html`;
             
             convertMarkdownToHtml(inputPath, outputPath, slug);
         });
     }
+    
+    // Copier les assets
+    copyAssets();
     
     console.log('✅ Build terminé !');
 }

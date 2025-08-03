@@ -1,0 +1,10 @@
+<h1>Blog</h1>
+<div class="blog-list">
+    {{#each articles}}
+    <article class="blog-item">
+        <h2><a href="blog/{{slug}}.html">{{title}}</a></h2>
+        {{#if date}}<time class="blog-date">{{date}}</time>{{/if}}
+        {{#if excerpt}}<p class="blog-excerpt">{{excerpt}}</p>{{/if}}
+    </article>
+    {{/each}}
+</div> 

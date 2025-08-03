@@ -9,51 +9,34 @@ marked.use({
   gfm: true
 });
 
-// Template HTML de base
-const htmlTemplate = (title, content, currentPage = '') => `
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <header class="header">
-        <div class="container">
-            <nav class="nav">
-                <a href="index.html" class="nav-logo">Mon Blog</a>
-                <ul class="nav-menu">
-                    <li><a href="index.html" class="nav-link ${currentPage === 'home' ? 'active' : ''}">Accueil</a></li>
-                    <li><a href="blog.html" class="nav-link ${currentPage === 'blog' ? 'active' : ''}">Blog</a></li>
-                    <li><a href="about.html" class="nav-link ${currentPage === 'about' ? 'active' : ''}">À propos</a></li>
-                    <li><a href="faq.html" class="nav-link ${currentPage === 'faq' ? 'active' : ''}">FAQ</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+// Fonction pour lire et remplacer les variables dans un template
+function renderTemplate(templatePath, data) {
+    try {
+        let template = fs.readFileSync(templatePath, 'utf8');
+        
+        // Remplacer les variables simples
+        template = template.replace(/\{\{title\}\}/g, data.title || '');
+        template = template.replace(/\{\{content\}\}/g, data.content || '');
+        
+        // Gérer la classe active pour la navigation
+        if (data.currentPage) {
+            // Remplacer les classes active pour chaque page
+            const pages = ['home', 'blog', 'about', 'faq'];
+            pages.forEach(page => {
+                const pattern = new RegExp(`\\{\\{#if currentPage\\}\\}\\{\\{#eq currentPage '${page}'\\}\\}active\\{\\{/eq\\}\\}\\{\\{/if\\}\\}`, 'g');
+                template = template.replace(pattern, data.currentPage === page ? 'active' : '');
+            });
+        }
+        
+        return template;
+    } catch (error) {
+        console.error(`❌ Erreur lors de la lecture du template ${templatePath}:`, error.message);
+        return '';
+    }
+}
 
-    <main class="main">
-        <div class="container">
-            ${content}
-        </div>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 Mon Blog. Tous droits réservés.</p>
-        </div>
-    </footer>
-</body>
-</html>
-`;
-
-// Fonction pour convertir markdown en HTML
-function convertMarkdownToHtml(markdownFile, outputFile, title, currentPage = '') {
+// Fonction pour convertir markdown en HTML avec template
+function convertMarkdownToHtmlWithTemplate(markdownFile, outputFile, title, currentPage = '') {
     try {
         const markdownContent = fs.readFileSync(markdownFile, 'utf8');
         const { attributes, body } = frontMatter(markdownContent);
@@ -64,12 +47,43 @@ function convertMarkdownToHtml(markdownFile, outputFile, title, currentPage = ''
         // Utiliser le titre du front-matter ou le titre par défaut
         const pageTitle = attributes.title || title;
         
-        // Générer le HTML complet
-        const fullHtml = htmlTemplate(pageTitle, htmlContent, currentPage);
+        // Générer le HTML complet avec le template
+        const fullHtml = renderTemplate('templates/base.html', {
+            title: pageTitle,
+            content: htmlContent,
+            currentPage: currentPage
+        });
         
         // Écrire le fichier HTML dans le répertoire dist
         fs.writeFileSync(outputFile, fullHtml);
         console.log(`✅ ${markdownFile} → ${outputFile}`);
+    } catch (error) {
+        console.error(`❌ Erreur lors de la conversion de ${markdownFile}:`, error.message);
+    }
+}
+
+// Fonction pour convertir markdown en HTML sans template (pour les articles de blog)
+function convertMarkdownToHtmlDirect(markdownFile, outputFile, title, currentPage = '') {
+    try {
+        const markdownContent = fs.readFileSync(markdownFile, 'utf8');
+        const { attributes, body } = frontMatter(markdownContent);
+        
+        // Convertir le markdown en HTML
+        const htmlContent = marked(body);
+        
+        // Utiliser le titre du front-matter ou le titre par défaut
+        const pageTitle = attributes.title || title;
+        
+        // Générer le HTML complet avec le template
+        const fullHtml = renderTemplate('templates/base.html', {
+            title: pageTitle,
+            content: htmlContent,
+            currentPage: currentPage
+        });
+        
+        // Écrire le fichier HTML dans le répertoire dist
+        fs.writeFileSync(outputFile, fullHtml);
+        console.log(`✅ ${markdownFile} → ${outputFile} (avec template)`);
     } catch (error) {
         console.error(`❌ Erreur lors de la conversion de ${markdownFile}:`, error.message);
     }
@@ -81,7 +95,7 @@ function createBlogPage() {
         const blogDir = path.join(__dirname, 'content', 'blog');
         const blogFiles = fs.readdirSync(blogDir).filter(file => file.endsWith('.md'));
         
-        let blogListHtml = '<h1>Blog</h1><div class="blog-list">';
+        const articles = [];
         
         blogFiles.forEach(file => {
             const filePath = path.join(blogDir, file);
@@ -93,22 +107,61 @@ function createBlogPage() {
             const date = attributes.date || '';
             const excerpt = attributes.excerpt || '';
             
+            articles.push({
+                slug: slug,
+                title: title,
+                date: date,
+                excerpt: excerpt
+            });
+        });
+        
+        // Générer le HTML de la liste des articles
+        let blogListHtml = '<h1>Blog</h1><div class="blog-list">';
+        
+        articles.forEach(article => {
             blogListHtml += `
                 <article class="blog-item">
-                    <h2><a href="blog/${slug}.html">${title}</a></h2>
-                    ${date ? `<time class="blog-date">${date}</time>` : ''}
-                    ${excerpt ? `<p class="blog-excerpt">${excerpt}</p>` : ''}
+                    <h2><a href="blog/${article.slug}.html">${article.title}</a></h2>
+                    ${article.date ? `<time class="blog-date">${article.date}</time>` : ''}
+                    ${article.excerpt ? `<p class="blog-excerpt">${article.excerpt}</p>` : ''}
                 </article>
             `;
         });
         
         blogListHtml += '</div>';
         
-        const fullHtml = htmlTemplate('Blog', blogListHtml, 'blog');
+        // Générer le HTML complet avec le template
+        const fullHtml = renderTemplate('templates/base.html', {
+            title: 'Blog',
+            content: blogListHtml,
+            currentPage: 'blog'
+        });
+        
         fs.writeFileSync('dist/blog.html', fullHtml);
         console.log('✅ Page blog créée');
     } catch (error) {
         console.error('❌ Erreur lors de la création de la page blog:', error.message);
+    }
+}
+
+// Fonction pour traiter index.html avec le template
+function processIndexHtml() {
+    try {
+        // Lire le contenu du fichier index.html
+        const content = fs.readFileSync('index.html', 'utf8');
+        
+        // Générer le HTML complet avec le template
+        const fullHtml = renderTemplate('templates/base.html', {
+            title: 'Accueil - Mon Blog',
+            content: content,
+            currentPage: 'home'
+        });
+        
+        // Écrire le fichier HTML dans le répertoire dist
+        fs.writeFileSync('dist/index.html', fullHtml);
+        console.log('✅ index.html traité avec le template → dist/index.html');
+    } catch (error) {
+        console.error('❌ Erreur lors du traitement de index.html:', error.message);
     }
 }
 
@@ -130,23 +183,29 @@ function build() {
     console.log('🚀 Début du build...');
     
     // Créer les dossiers nécessaires
-    const dirs = ['dist', 'dist/blog', 'dist/assets', 'content', 'content/blog'];
+    const dirs = ['dist', 'dist/blog', 'dist/assets', 'content', 'content/blog', 'templates'];
     dirs.forEach(dir => {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
     });
     
-    // Convertir les pages principales
+    // Traiter index.html avec le template
+    processIndexHtml();
+    
+    // Convertir les pages principales (sauf index.html qui est traité séparément)
     const pages = [
-        { input: 'content/index.md', output: 'dist/index.html', title: 'Accueil', currentPage: 'home' },
-        { input: 'content/about.md', output: 'dist/about.html', title: 'À propos', currentPage: 'about' },
-        { input: 'content/faq.md', output: 'dist/faq.html', title: 'FAQ', currentPage: 'faq' }
+        { input: 'content/about.md', output: 'dist/about.html', title: 'À propos', currentPage: 'about', useTemplate: true },
+        { input: 'content/faq.md', output: 'dist/faq.html', title: 'FAQ', currentPage: 'faq', useTemplate: true }
     ];
     
     pages.forEach(page => {
         if (fs.existsSync(page.input)) {
-            convertMarkdownToHtml(page.input, page.output, page.title, page.currentPage);
+            if (page.useTemplate) {
+                convertMarkdownToHtmlWithTemplate(page.input, page.output, page.title, page.currentPage);
+            } else {
+                convertMarkdownToHtmlDirect(page.input, page.output, page.title, page.currentPage);
+            }
         }
     });
     
@@ -163,7 +222,7 @@ function build() {
             const inputPath = path.join(blogDir, file);
             const outputPath = `dist/blog/${slug}.html`;
             
-            convertMarkdownToHtml(inputPath, outputPath, slug);
+            convertMarkdownToHtmlDirect(inputPath, outputPath, slug);
         });
     }
     
@@ -171,6 +230,7 @@ function build() {
     copyAssets();
     
     console.log('✅ Build terminé !');
+    console.log('📝 Note: Tous les fichiers utilisent maintenant le template templates/base.html');
 }
 
 // Exécuter le build si le script est appelé directement
@@ -178,4 +238,4 @@ if (require.main === module) {
     build();
 }
 
-module.exports = { build, convertMarkdownToHtml }; 
+module.exports = { build, convertMarkdownToHtmlWithTemplate, convertMarkdownToHtmlDirect }; 

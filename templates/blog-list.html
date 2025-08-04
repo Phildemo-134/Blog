@@ -1,10 +1,51 @@
-<h1>Blog</h1>
-<div class="blog-list">
+<div class="blog-header">
+    <div class="category-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12,6 12,12 16,14"></polyline>
+        </svg>
+        DÉVELOPPEMENT
+    </div>
+    <h1 class="blog-title">Articles récents</h1>
+    <p class="blog-subtitle">Découvrez nos derniers articles sur le développement web et les technologies modernes</p>
+</div>
+
+<div class="blog-grid">
     {{#each articles}}
-    <article class="blog-item">
-        <h2><a href="blog/{{slug}}.html">{{title}}</a></h2>
-        {{#if date}}<time class="blog-date">{{date}}</time>{{/if}}
-        {{#if excerpt}}<p class="blog-excerpt">{{excerpt}}</p>{{/if}}
+    <article class="blog-card">
+        <div class="blog-card-image">
+            <img src="{{image}}" alt="{{title}}" class="card-image">
+            <div class="card-overlay">
+                <span class="read-more">Lire l'article</span>
+            </div>
+        </div>
+        <div class="blog-card-content">
+            <h2 class="card-title">
+                <a href="blog/{{slug}}.html">{{title}}</a>
+            </h2>
+            <div class="card-meta">
+                <span class="author">PAR DÉVELOPPEUR</span>
+                <span class="date">{{date}}</span>
+            </div>
+            <div class="card-stats">
+                <span class="views">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    {{views}} vues
+                </span>
+                <span class="comments">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    {{comments}} commentaires
+                </span>
+            </div>
+            {{#if excerpt}}
+            <p class="card-excerpt">{{excerpt}}</p>
+            {{/if}}
+        </div>
     </article>
     {{/each}}
 </div> 

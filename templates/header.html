@@ -1,0 +1,45 @@
+<!-- Header/Navbar -->
+<header class="navbar">
+    <div class="navbar-container">
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="#1E40AF"/>
+                    <path d="M12 22L10.91 15.74L4 15L10.91 14.26L12 8L13.09 14.26L20 15L13.09 15.74L12 22Z" fill="#3B82F6"/>
+                    <path d="M2 12L8.26 13.09L9 20L9.74 13.09L16 12L9.74 10.91L9 4L8.26 10.91L2 12Z" fill="#1E40AF"/>
+                    <path d="M22 12L15.74 10.91L15 4L14.26 10.91L8 12L14.26 13.09L15 20L15.74 13.09L22 12Z" fill="#3B82F6"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="logo-main">MON PREMIER</span>
+                <span class="logo-sub">BLOG</span>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="nav-links">
+            <a href="{{homeLink}}" class="nav-link {{#if currentPage}}{{#eq currentPage 'home'}}active{{/eq}}{{/if}}">
+                Accueil
+                <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <a href="{{blogLink}}" class="nav-link {{#if currentPage}}{{#eq currentPage 'blog'}}active{{/eq}}{{/if}}">
+                Articles
+                <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <a href="{{aboutLink}}" class="nav-link {{#if currentPage}}{{#eq currentPage 'about'}}active{{/eq}}{{/if}}">
+                À propos
+            </a>
+            <a href="{{contactLink}}" class="nav-link {{#if currentPage}}{{#eq currentPage 'contact'}}active{{/eq}}{{/if}}">
+                Contact
+                <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        </nav>
+    </div>
+</header> 
